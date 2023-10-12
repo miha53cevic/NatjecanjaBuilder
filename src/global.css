@@ -11,10 +11,14 @@ html {
 body {
     margin: 0;
     padding: 0;
+}
+
+main {
     background-image: url('/background.svg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    min-height: 100vh;
 }
 
 #root {
