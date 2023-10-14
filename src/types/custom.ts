@@ -3,13 +3,12 @@ export interface Bodovanje {
     remi: number,
     poraz: number,
 }
-export type Rezultat = keyof Bodovanje;
+export type Rezultat = keyof Bodovanje | '';
 
 export interface Igra {
     natjecatelji: [string, string],
     score: string,
-    rezultat?: Rezultat,
-    pobjednik?: string,
+    rezultat: Rezultat,
 }
 
 export interface Kolo {

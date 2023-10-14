@@ -1,4 +1,4 @@
-import { Formik } from "formik";
+import { Formik, FormikErrors } from "formik";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import roundrobin from "roundrobin";
 import { addDoc, collection } from "firebase/firestore";
@@ -51,7 +51,16 @@ function StvoriNatjecanjeForm() {
     return (
         <Formik
             initialValues={initialValues}
-            onSubmit={(values) => {
+            validate={(values) => {
+                const errors: FormikErrors<NatjecanjeFormData> = {};
+
+                const natjecatelji: string[] = ParseNatjecatelji(values.natjecateljiString);
+                if (!natjecatelji.length) {
+                    errors.natjecateljiString = "Krivo unesen format!";
+                }
+                return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
                 console.log("NatjecanjeFormData: ", values);
 
                 const natjecatelji: string[] = ParseNatjecatelji(values.natjecateljiString);
@@ -65,6 +74,7 @@ function StvoriNatjecanjeForm() {
                         const igra: Igra = {
                             natjecatelji: schedule[i][j],
                             score: "",
+                            rezultat: "",
                         };
                         kolo.igre.push(igra);
                     }
@@ -78,9 +88,12 @@ function StvoriNatjecanjeForm() {
                     ownerId: 'ja',
                 };
                 CreateNatjecanje(natjecanje)
-                    .then(id => (
-                        navigate('/natjecanje/' + id)
-                    )).catch(err => {
+                    .then(id => {
+                        setSubmitting(false);
+                        navigate('/natjecanje/' + id);
+                    })
+                    .catch(err => {
+                        setSubmitting(false);
                         console.error(err);
                     });
             }}
@@ -89,31 +102,36 @@ function StvoriNatjecanjeForm() {
                 <Form onSubmit={formik.handleSubmit}>
                     <Form.Group>
                         <Form.FloatingLabel label='Naziv natjecanja'>
-                            <Form.Control type='text' placeholder='' {...formik.getFieldProps('naziv')} />
+                            <Form.Control type='text' placeholder='' {...formik.getFieldProps('naziv')} required />
                         </Form.FloatingLabel>
                     </Form.Group>
                     <br />
                     <Form.Group>
                         <Form.FloatingLabel label='Natjecatelji (odvojeni zarezom ili novim rektom)'>
-                            <Form.Control as="textarea" placeholder='' style={{ height: '250px' }} {...formik.getFieldProps('natjecateljiString')} />
+                            <Form.Control as="textarea" placeholder='' style={{ height: '250px' }} {...formik.getFieldProps('natjecateljiString')} required />
                         </Form.FloatingLabel>
+                        {formik.touched.natjecateljiString && formik.errors.natjecateljiString ?
+                            <p className="text-danger">{formik.errors.natjecateljiString}</p>
+                            :
+                            null
+                        }
                     </Form.Group>
                     <br />
                     <Form.Group>
                         <Row>
                             <Col>
                                 <Form.FloatingLabel label='Pobjeda'>
-                                    <Form.Control type='number' placeholder='' min={0} step={0.1} {...formik.getFieldProps('bodovanje.pobjeda')} />
+                                    <Form.Control type='number' placeholder='' min={0} step={0.1} {...formik.getFieldProps('bodovanje.pobjeda')} required />
                                 </Form.FloatingLabel>
                             </Col>
                             <Col>
                                 <Form.FloatingLabel label='Remi'>
-                                    <Form.Control type='number' placeholder='' min={0} step={0.1} {...formik.getFieldProps('bodovanje.poraz')} />
+                                    <Form.Control type='number' placeholder='' min={0} step={0.1} {...formik.getFieldProps('bodovanje.poraz')} required />
                                 </Form.FloatingLabel>
                             </Col>
                             <Col>
                                 <Form.FloatingLabel label='Poraz'>
-                                    <Form.Control type='number' placeholder='' min={0} step={0.1} {...formik.getFieldProps('bodovanje.remi')} />
+                                    <Form.Control type='number' placeholder='' min={0} step={0.1} {...formik.getFieldProps('bodovanje.remi')} required />
                                 </Form.FloatingLabel>
                             </Col>
                         </Row>
@@ -121,7 +139,7 @@ function StvoriNatjecanjeForm() {
                     <br />
                     <Form.Group>
                         <Stack>
-                            <Button type='submit'>Stvori natjecanje</Button>
+                            <Button type='submit' disabled={!formik.isValid || formik.isSubmitting}>Stvori natjecanje</Button>
                         </Stack>
                     </Form.Group>
                 </Form>
