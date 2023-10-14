@@ -2,5 +2,5 @@
 // https://drag13.io/posts/custom-typings/index.html
 
 declare module 'roundrobin' {
-    export default function (n: number, ps?: string[]): Array<Array<number | string>>;
+    export default function (n: number, ps: string[]): Array<Array<[string, string]>>;
 }

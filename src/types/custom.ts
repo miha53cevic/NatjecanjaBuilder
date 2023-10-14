@@ -1,10 +1,19 @@
-export type Bodovanje = [number, number, number];
-export type Rezultat = 'pobjeda' | 'remi' | 'poraz';
+export interface Bodovanje {
+    pobjeda: number,
+    remi: number,
+    poraz: number,
+}
+export type Rezultat = keyof Bodovanje;
+
+export interface Igra {
+    natjecatelji: [string, string],
+    score: string,
+    rezultat?: Rezultat,
+    pobjednik?: string,
+}
 
 export interface Kolo {
-    natjecatelji: [string, string],
-    rezultat: Rezultat,
-    pobjednik?: string,
+    igre: Igra[]
 }
 
 export interface Natjecanje {
@@ -12,4 +21,7 @@ export interface Natjecanje {
     natjecatelji: string[],
     bodovanje: Bodovanje,
     kola: Kolo[],
+    ownerId: string,
 }
+
+export type FirebaseCollections = 'natjecanja';

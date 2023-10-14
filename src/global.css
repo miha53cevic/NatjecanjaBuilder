@@ -13,7 +13,7 @@ body {
     padding: 0;
 }
 
-main {
+body {
     background-image: url('/background.svg');
     background-position: center;
     background-repeat: no-repeat;
