@@ -2,10 +2,11 @@ import { Formik, FormikErrors } from "formik";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import roundrobin from "roundrobin";
 import { addDoc, collection } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { Bodovanje, FirebaseCollections, Igra, Kolo, Natjecanje } from "../../types/custom";
 import fireapp from "../../lib/fireapp";
-import { useNavigate } from "react-router-dom";
 
 function ParseNatjecatelji(natjecateljiString: string): string[] {
     if (natjecateljiString.includes(',') && natjecateljiString.includes('\n')) return [];
@@ -36,6 +37,7 @@ export interface NatjecanjeFormData {
 
 function StvoriNatjecanjeForm() {
 
+    const { user } = useAuth0();
     const navigate = useNavigate();
 
     const initialValues: NatjecanjeFormData = {
@@ -80,12 +82,15 @@ function StvoriNatjecanjeForm() {
                     }
                     kola.push(kolo);
                 }
+
+                if (!user || !user.sub) throw new Error("Korisnik nije logiran!");
+
                 const natjecanje: Natjecanje = {
                     naziv: values.naziv,
                     bodovanje: values.bodovanje,
                     natjecatelji: natjecatelji,
                     kola: kola,
-                    ownerId: 'ja',
+                    ownerId: user.sub,
                 };
                 CreateNatjecanje(natjecanje)
                     .then(id => {

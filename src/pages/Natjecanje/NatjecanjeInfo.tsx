@@ -1,15 +1,18 @@
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, setDoc } from "firebase/firestore";
+import { Button, Col, Form, Row, Stack } from "react-bootstrap";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import fireapp from "../../lib/fireapp";
 import { FirebaseCollections, Natjecanje } from "../../types/custom";
-import { Col, Form, Row, Stack } from "react-bootstrap";
+import { ShareFill } from "react-bootstrap-icons";
 
 export interface Props {
     id: string,
 }
 
 function StvoriLeaderboard(natjecanje: Natjecanje) {
+
     const leaderboard = new Map<string, number>();
     for (const natjecatelj of natjecanje.natjecatelji) {
         leaderboard.set(natjecatelj, 0);
@@ -48,6 +51,8 @@ function StvoriLeaderboard(natjecanje: Natjecanje) {
 
 function NatjecanjeInfo({ id }: Props) {
 
+    const { isAuthenticated, isLoading } = useAuth0();
+
     const [value, loading, error] = useDocumentData(
         doc(fireapp.firestore, 'natjecanja' as FirebaseCollections, id)
     );
@@ -82,7 +87,7 @@ function NatjecanjeInfo({ id }: Props) {
         }
     };
 
-    if (loading) return <p>Učitavanje...</p>;
+    if (loading || isLoading) return <p>Učitavanje...</p>;
     else if (error) return <p>Greška pri učitavanju {JSON.stringify(error)}</p>;
     else if (value) {
         const natjecanje = value as Natjecanje;
@@ -90,6 +95,10 @@ function NatjecanjeInfo({ id }: Props) {
             <div>
                 <h1>Natjecanje: {natjecanje.naziv}</h1>
                 <p>Owner: {natjecanje.ownerId}</p>
+                <Button className='gx-3'>
+                    <span className="me-1" onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Spremljeno u clipboard'); }}>Podijeli</span>
+                    <ShareFill />
+                </Button>
                 <br />
                 <h2>Natjecatelji</h2>
                 {natjecanje.natjecatelji.map((n, i) => (
@@ -123,7 +132,7 @@ function NatjecanjeInfo({ id }: Props) {
                                                 </tbody>
                                             </table>
                                             <Form.Group>
-                                                <Form.Control type='text' placeholder="0:0" defaultValue={igra.score} onBlur={(e) => updateScore(koloIndex, igraIndex, e.target.value)} />
+                                                <Form.Control type='text' placeholder="0:0" defaultValue={igra.score} onBlur={(e) => updateScore(koloIndex, igraIndex, e.target.value)} disabled={!isAuthenticated} />
                                             </Form.Group>
                                         </Stack>
                                     ))}

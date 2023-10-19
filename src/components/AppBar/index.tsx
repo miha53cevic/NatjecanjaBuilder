@@ -1,8 +1,16 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { Navbar, Image, Stack, Button, Nav } from "react-bootstrap";
 
 function AppBar() {
 
-    const handlePrijava = () => {
+    const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
+
+    const handlePrijava = async () => {
+        await loginWithRedirect();
+    };
+
+    const handleLogout = async () => {
+        await logout();
     };
 
     return (
@@ -16,11 +24,24 @@ function AppBar() {
             <Navbar.Toggle />
             <Navbar.Collapse>
                 <Nav className="flex-grow-1">
-                    <Nav.Link href='/'>Stvori natjecanje</Nav.Link>
-                    <Nav.Link href='/moja-natjecanja'>Moja natjecanja</Nav.Link>
+                    {isAuthenticated ?
+                        <>
+                            <Nav.Link href='/'>Stvori natjecanje</Nav.Link>
+                            <Nav.Link href='/moja-natjecanja'>Moja natjecanja</Nav.Link>
+                        </>
+                        :
+                        null
+                    }
                 </Nav>
                 <div>
-                    <Button variant="light" onClick={handlePrijava}>Prijava</Button>
+                    {isAuthenticated ?
+                        <Stack direction='horizontal' gap={3}>
+                            <h5 className='text-white'>Pozdrav, {user?.name}</h5>
+                            <Button variant="light" onClick={handleLogout}>Logout</Button>
+                        </Stack>
+                        :
+                        <Button variant="light" onClick={handlePrijava}>Prijava</Button>
+                    }
                 </div>
             </Navbar.Collapse>
         </Navbar>
