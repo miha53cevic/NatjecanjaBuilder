@@ -51,7 +51,7 @@ function StvoriLeaderboard(natjecanje: Natjecanje) {
 
 function NatjecanjeInfo({ id }: Props) {
 
-    const { isAuthenticated, isLoading } = useAuth0();
+    const { isAuthenticated, isLoading, user } = useAuth0();
 
     const [value, loading, error] = useDocumentData(
         doc(fireapp.firestore, 'natjecanja' as FirebaseCollections, id)
@@ -132,7 +132,7 @@ function NatjecanjeInfo({ id }: Props) {
                                                 </tbody>
                                             </table>
                                             <Form.Group>
-                                                <Form.Control type='text' placeholder="0:0" defaultValue={igra.score} onBlur={(e) => updateScore(koloIndex, igraIndex, e.target.value)} disabled={!isAuthenticated} />
+                                                <Form.Control type='text' placeholder="0:0" defaultValue={igra.score} onBlur={(e) => updateScore(koloIndex, igraIndex, e.target.value)} disabled={!isAuthenticated || user?.sub !== natjecanje.ownerId} />
                                             </Form.Group>
                                         </Stack>
                                     ))}
