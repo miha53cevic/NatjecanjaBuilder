@@ -10,7 +10,11 @@ function AppBar() {
     };
 
     const handleLogout = async () => {
-        await logout();
+        await logout({
+            logoutParams: {
+                returnTo: window.location.origin,
+            }
+        });
     };
 
     return (
