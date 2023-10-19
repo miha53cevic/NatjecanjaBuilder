@@ -95,8 +95,8 @@ function NatjecanjeInfo({ id }: Props) {
             <div>
                 <h1>Natjecanje: {natjecanje.naziv}</h1>
                 <p>Owner: {natjecanje.ownerId}</p>
-                <Button className='gx-3'>
-                    <span className="me-1" onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Spremljeno u clipboard'); }}>Podijeli</span>
+                <Button className='gx-3' onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Spremljeno u clipboard'); }}>
+                    <span className="me-1">Podijeli</span>
                     <ShareFill />
                 </Button>
                 <br />

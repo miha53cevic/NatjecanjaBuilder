@@ -3,10 +3,10 @@ import { Navbar, Image, Stack, Button, Nav } from "react-bootstrap";
 
 function AppBar() {
 
-    const { loginWithRedirect, isAuthenticated, user, logout } = useAuth0();
+    const { loginWithPopup, isAuthenticated, user, logout } = useAuth0();
 
     const handlePrijava = async () => {
-        await loginWithRedirect();
+        await loginWithPopup();
     };
 
     const handleLogout = async () => {
